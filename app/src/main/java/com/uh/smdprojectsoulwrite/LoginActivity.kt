@@ -108,6 +108,10 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+
+                    // Get and send FCM token
+                    sendFCMTokenToServer(userId.toInt())
+
                     navigateToHome()
                 } else {
                     Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
@@ -123,6 +127,36 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun sendFCMTokenToServer(userId: Int) {
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                android.util.Log.d("FCM", "Token: $token")
+
+                val url = ApiHelper.UPDATE_FCM_TOKEN_URL
+                val request = object : com.android.volley.toolbox.StringRequest(
+                    com.android.volley.Request.Method.POST, url,
+                    { response ->
+                        android.util.Log.d("FCM", "Token sent to server: $response")
+                    },
+                    { error ->
+                        android.util.Log.e("FCM", "Failed to send token: ${error.message}")
+                    }
+                ) {
+                    override fun getParams(): Map<String, String> {
+                        return mapOf(
+                            "user_id" to userId.toString(),
+                            "fcm_token" to token
+                        )
+                    }
+                }
+                com.android.volley.toolbox.Volley.newRequestQueue(this).add(request)
+            } else {
+                android.util.Log.e("FCM", "Failed to get token")
+            }
+        }
     }
 }
 

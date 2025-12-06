@@ -31,6 +31,7 @@ class AddEntryActivity : AppCompatActivity() {
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1
+        private const val PERMISSION_REQUEST_CODE = 100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,8 +64,34 @@ class AddEntryActivity : AppCompatActivity() {
     }
 
     private fun openImagePicker() {
+        // Check for permission on Android 6.0+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ uses READ_MEDIA_IMAGES
+            if (checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.READ_MEDIA_IMAGES), PERMISSION_REQUEST_CODE)
+                return
+            }
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            // Android 6-12 uses READ_EXTERNAL_STORAGE
+            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
+                return
+            }
+        }
+
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                openImagePicker()
+            } else {
+                Toast.makeText(this, "Permission denied. Cannot access gallery.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -112,27 +139,41 @@ class AddEntryActivity : AppCompatActivity() {
                 val inputStream: InputStream? = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
 
+                if (bitmap == null) {
+                    Toast.makeText(this, "Failed to decode image", Toast.LENGTH_SHORT).show()
+                    saveJournalToDatabase(userId, userName, title, content, "", "", isPublic)
+                    return
+                }
+
                 // Compress image
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream)
                 val imageBytes = byteArrayOutputStream.toByteArray()
 
+                android.util.Log.d("AddEntry", "Image size: ${imageBytes.size} bytes")
+
                 // Generate unique filename
                 val fileName = "journal_${System.currentTimeMillis()}.jpg"
+
+                Toast.makeText(this, "Uploading image...", Toast.LENGTH_SHORT).show()
 
                 // Upload to server
                 apiHelper.uploadImage(imageBytes, fileName,
                     onSuccess = { imageUrl, thumbnailUrl ->
+                        android.util.Log.d("AddEntry", "Upload success: $imageUrl")
+                        Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
                         // Use returned URLs from server
                         saveJournalToDatabase(userId, userName, title, content, imageUrl, thumbnailUrl, isPublic)
                     },
                     onError = { error ->
-                        Toast.makeText(this, "Failed to upload image: $error", Toast.LENGTH_SHORT).show()
+                        android.util.Log.e("AddEntry", "Upload failed: $error")
+                        Toast.makeText(this, "Image upload failed. Saving without image.", Toast.LENGTH_LONG).show()
                         // Save without image
                         saveJournalToDatabase(userId, userName, title, content, "", "", isPublic)
                     }
                 )
             } catch (e: Exception) {
+                android.util.Log.e("AddEntry", "Error processing image: ${e.message}")
                 Toast.makeText(this, "Error processing image: ${e.message}", Toast.LENGTH_SHORT).show()
                 saveJournalToDatabase(userId, userName, title, content, "", "", isPublic)
             }

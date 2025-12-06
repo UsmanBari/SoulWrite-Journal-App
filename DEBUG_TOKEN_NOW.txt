@@ -1,0 +1,37 @@
+# 🔍 DIAGNOSE TOKEN ISSUE
+
+## 📤 UPLOAD THIS FILE:
+
+**File**: `backend/debug_token.php`
+
+**To**: `http://barisoulwrite.atwebpages.com/backend/debug_token.php`
+
+---
+
+## ✅ THEN VISIT:
+
+```
+http://barisoulwrite.atwebpages.com/backend/debug_token.php
+```
+
+This will show EXACTLY where the token generation fails with detailed error messages.
+
+---
+
+## 📊 WHAT IT CHECKS:
+
+1. ✅ File exists
+2. ✅ JSON parses
+3. ✅ Private key format
+4. ✅ JWT creation
+5. ✅ OAuth2 exchange
+6. ✅ Access token retrieval
+
+**Share the FULL output** and I'll fix the exact issue!
+
+---
+
+⏱️ TIME: 2 minutes
+
+Upload → Visit → Copy output → I'll fix it immediately!
+

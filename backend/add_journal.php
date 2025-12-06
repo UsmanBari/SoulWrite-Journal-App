@@ -27,6 +27,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         $journal_id = $conn->insert_id;
+
+        // If journal is public, notify all followers
+        if ($is_public == 1) {
+            // Get user's info
+            $user_stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+            $user_stmt->bind_param("i", $user_id);
+            $user_stmt->execute();
+            $user_result = $user_stmt->get_result();
+
+            if ($user_result->num_rows > 0) {
+                $user_data = $user_result->fetch_assoc();
+                $author_name = $user_data['name'];
+
+                // Get all followers
+                $followers_stmt = $conn->prepare("SELECT follower_id FROM followers WHERE following_id = ?");
+                $followers_stmt->bind_param("i", $user_id);
+                $followers_stmt->execute();
+                $followers_result = $followers_stmt->get_result();
+
+                // Load notification functions
+                require_once 'send_notification.php';
+
+                $notification_title = "New Journal";
+                $notification_message = "$author_name posted a new journal: $title";
+                $notification_data = json_encode(['journal_id' => $journal_id, 'type' => 'new_journal']);
+
+                // Send notification to each follower
+                while ($follower = $followers_result->fetch_assoc()) {
+                    $follower_id = $follower['follower_id'];
+
+                    // Save notification to database
+                    $notif_stmt = $conn->prepare("INSERT INTO notifications (user_id, from_user_id, type, title, message, data) VALUES (?, ?, 'new_journal', ?, ?, ?)");
+                    $notif_stmt->bind_param("iisss", $follower_id, $user_id, $notification_title, $notification_message, $notification_data);
+                    $notif_stmt->execute();
+
+                    // Send FCM push notification
+                    sendPushNotification($follower_id, $notification_title, $notification_message, ['journal_id' => (string)$journal_id, 'type' => 'new_journal']);
+                }
+
+                error_log("Sent new journal notifications to " . $followers_result->num_rows . " followers");
+            }
+        }
+
         echo json_encode(array(
             "success" => true,
             "message" => "Journal added successfully",

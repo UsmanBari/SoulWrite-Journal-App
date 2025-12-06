@@ -41,14 +41,6 @@
                     android:layout_marginStart="16dp"/>
             </LinearLayout>
 
-            <!-- Profile avatar -->
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/profileicon"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="22dp"/>
 
             <!-- Name -->
             <TextView
@@ -120,9 +112,40 @@
                 android:backgroundTint="#E14242"
                 android:textColor="@color/white"/>
 
+            <!-- My Journals Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Journals"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#181818"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Journals RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/journals_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:minHeight="200dp"/>
+
+            <!-- Empty View -->
+            <TextView
+                android:id="@+id/empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No journals yet. Start writing!"
+                android:textSize="16sp"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone"/>
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="30dp"/>
+                android:layout_height="80dp"/>
         </LinearLayout>
     </ScrollView>
 

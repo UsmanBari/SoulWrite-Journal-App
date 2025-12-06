@@ -9,6 +9,11 @@ data class Journal(
     val thumbnailUrl: String = "",
     val date: Long = 0,
     val userName: String = "",
-    val isPublic: Boolean = false
+    val userFcmToken: String = "",
+    val isPublic: Boolean = false,
+    val authorName: String = "",
+    val likeCount: Int = 0,
+    val commentCount: Int = 0,
+    var isLiked: Boolean = false
 )
 

@@ -6,6 +6,6 @@ data class User(
     val email: String = "",
     val phone: String = "",
     val profileImageUrl: String = "",
-    val following: List<String> = emptyList()
+    var isFollowing: Boolean = false
 )
 

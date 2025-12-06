@@ -41,27 +41,70 @@
                     android:layout_marginStart="16dp" />
             </LinearLayout>
 
-            <!-- Search Bar -->
-            <EditText
-                android:id="@+id/search_input"
+            <!-- Search Bar with Button -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:hint="Search journals..."
-                android:background="@drawable/edittext_bg"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textSize="15sp"
-                android:textColor="#181818"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/search_input"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:hint="Search..."
+                    android:background="@drawable/edittext_bg"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="15sp"
+                    android:textColor="#181818"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"/>
+
+                <Button
+                    android:id="@+id/search_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Search"
+                    android:backgroundTint="@color/blue"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <!-- Tabs for Journals/Users -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/search_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:tabTextColor="#888888"
+                app:tabSelectedTextColor="@color/blue"
+                app:tabIndicatorColor="@color/blue"
+                android:layout_marginBottom="8dp"/>
 
             <!-- Search Results RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_results_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"/>
+                android:paddingHorizontal="16dp"
+                android:minHeight="300dp"/>
+
+            <!-- Empty View -->
+            <TextView
+                android:id="@+id/empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No results found"
+                android:textSize="16sp"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone"/>
         </LinearLayout>
     </ScrollView>
 

@@ -1,0 +1,54 @@
+# Allow public access to all files in uploads folder
+# This is required for Android apps to access images
+
+# Disable directory listing for security
+Options -Indexes
+
+# Turn off URL rewriting if enabled
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+# Allow ALL requests to image files (Apache 2.4+)
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|bmp|webp|txt)$">
+        Require all granted
+    </FilesMatch>
+</IfModule>
+
+# Allow ALL requests to image files (Apache 2.2)
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|bmp|webp|txt)$">
+        Order Allow,Deny
+        Allow from all
+    </FilesMatch>
+</IfModule>
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+    AddType image/webp .webp
+</IfModule>
+
+# Allow cross-origin requests (CORS) - needed for some Android versions
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|bmp|webp)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+        Header set Access-Control-Allow-Headers "Content-Type"
+    </FilesMatch>
+</IfModule>
+
+# Block access to .htaccess itself for security
+<Files ".htaccess">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</Files>
+

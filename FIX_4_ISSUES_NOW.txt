@@ -1,0 +1,76 @@
+# ⚡ QUICK FIX - 4 Issues
+
+## YOUR PROBLEMS:
+1. ❌ Can't see likes on own journal
+2. ❌ No comment notifications in Alerts
+3. ❌ Can only see 3 of 8 comments
+4. ❌ No push notifications
+
+## THE SOLUTION:
+
+### 1️⃣ RE-UPLOAD add_comment.php (CRITICAL!)
+**You uploaded the OLD version!**
+
+The NEW version has:
+- Error suppression at top
+- Better logging
+- Fixed notifications
+
+**Upload**: `backend/add_comment.php`
+**To**: `http://barisoulwrite.atwebpages.com/backend/`
+
+---
+
+### 2️⃣ UPLOAD test_notifications.php (NEW FILE)
+This will help diagnose issues.
+
+**Upload**: `backend/test_notifications.php`
+**To**: `http://barisoulwrite.atwebpages.com/backend/`
+
+Then visit:
+```
+http://barisoulwrite.atwebpages.com/backend/test_notifications.php
+```
+
+Look for ✅ symbols. Should say:
+- ✅ FCM notification sent successfully!
+
+---
+
+### 3️⃣ VERIFY services_json.json
+
+Visit in browser:
+```
+http://barisoulwrite.atwebpages.com/backend/services_json.json
+```
+
+Should show Firebase JSON (not 404).
+
+---
+
+### 4️⃣ REBUILD APP
+
+```
+Android Studio:
+File → Sync Project
+Build → Clean Project
+Build → Rebuild Project
+```
+
+---
+
+### 5️⃣ TEST
+
+1. ✅ Open own journal → See like count
+2. ✅ View all comments → Can scroll
+3. ✅ Add comment → Appears in Alerts
+4. ✅ Put app in background → Get push notification
+
+---
+
+## ⏱️ TIME: 18 minutes
+
+**Details**: See `URGENT_FIXES_ALL_4_ISSUES.md`
+
+**KEY**: Re-upload add_comment.php! The version you uploaded was OLD!
+

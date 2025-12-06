@@ -153,5 +153,37 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return user
     }
+
+    fun getUserJournals(userId: String): List<Journal> {
+        val journals = mutableListOf<Journal>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_JOURNALS WHERE $KEY_USER_ID = ? ORDER BY $KEY_DATE DESC",
+            arrayOf(userId)
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val journal = Journal(
+                    id = cursor.getString(cursor.getColumnIndexOrThrow(KEY_ID)),
+                    userId = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_ID)),
+                    title = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE)),
+                    content = cursor.getString(cursor.getColumnIndexOrThrow(KEY_CONTENT)),
+                    imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(KEY_IMAGE_URL)),
+                    thumbnailUrl = cursor.getString(cursor.getColumnIndexOrThrow(KEY_THUMBNAIL_URL)),
+                    date = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_DATE))
+                )
+                journals.add(journal)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return journals
+    }
+
+    fun clearAllJournals() {
+        val db = this.writableDatabase
+        db.delete(TABLE_JOURNALS, null, null)
+        android.util.Log.d("DatabaseHelper", "Cleared all journals from local database")
+    }
 }
 
