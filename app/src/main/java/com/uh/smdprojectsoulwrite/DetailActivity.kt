@@ -427,3 +427,6 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 }
+
+
+//..
